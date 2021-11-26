@@ -1,0 +1,54 @@
+const express = require('express')
+const app = express()
+const swaggerUI = require('swagger-ui-express')
+const docs = require('./src');
+docs.server('/', 'Localhost')
+
+docs.get('/:id')
+  .tag("dot-notation")
+  .query(['a','b:?'])
+  .res(200, '{hello,world}');
+
+let refRequest = docs.ref.schema('example','{id:i:1,name:s:foo,label:{id:i:2,name:?s:bar},arr:[{a:b:false}]}');
+docs.put('/:id')
+  .tag("dot-notation")
+  .req(refRequest)
+  .res(200, '{hello,world}');
+
+docs.patch('/:id')
+  .tag("dot-notation")
+  .req('{a,b}')
+  .res(200, '{hello,world}');
+
+docs.post('/:id/some/:more')
+  .tag("dot-notation")
+  .summary('quick api docs examples')
+  .desc("some description")
+  .req('{id:i:1,name:s:foo,label:{id:i:2,name:?s:bar}}')
+  .header('bearer:?')
+  .query('qry:i')
+  .res(200,'[{hello:s:test}]');
+
+docs.del('/:id')
+  .tag("dot-notation")
+  .req('{a,b}')
+  .res(200, '{hello,world}');
+
+
+docs.post('/:id/other/:more', {
+  tag: 'options',
+  desc: 'some description',
+  summary: 'quick api docs examples',
+  req: '{id:i:1,name:s:foo,label:{id:i:2,name:?s:bar}}',
+  header: 'bearer:?',
+  query: 'qry:i',
+  "200": '[{hello:s:test}]'
+});
+
+
+app.use('/', swaggerUI.serve, swaggerUI.setup(docs.swaggerDoc('Examples')));
+
+let port = process.env['PORT'] || 9000;
+app.listen(port, function () {
+  console.log(`server started on port ${port}`)
+})

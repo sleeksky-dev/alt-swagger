@@ -1,0 +1,13 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = git@github-sleekteam:sleeksky-dev/spec-swagger.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[user]
+	name = Yusuf
+	email = yusuf@sleeksky.com
