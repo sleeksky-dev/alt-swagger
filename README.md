@@ -1,6 +1,6 @@
 # Spec API
 
-Quickly spec your APIs for Swagger / OpenAPI interface. Uses @sleeksky-dev/flat-json-schema for specifying JSON schema.
+Quickly spec your APIs for Swagger / OpenAPI interface. Uses @sleeksky-dev/alt-schema for specifying JSON schema.
 
 # Example
 ```JavaScript
@@ -11,9 +11,9 @@ docs.put('/:id').tag("dot-notation").req(refRequest).res(200, '{hello,world}');
 ![](https://i.ibb.co/ypWxGZJ/spec-api-ss1.png)
 # Installation
 
-npm install -s @sleeksky-dev/spec-swagger
+npm install -s @sleeksky-dev/alt-swagger
 
-const docs = require('@sleeksky-dev/spec-swagger');
+const docs = require('@sleeksky-dev/alt-swagger');
 
 # License
 
