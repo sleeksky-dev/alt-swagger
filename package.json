@@ -37,6 +37,7 @@
     "swagger-ui-express": "^4.1.6"
   },
   "dependencies": {
+    "@sleeksky/alt-schema": "github:sleeksky-dev/alt-schema",
     "lodash": "^4.17.21"
   }
 }

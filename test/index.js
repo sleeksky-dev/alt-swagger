@@ -1,4 +1,4 @@
-var asset = require('asset');
+var assert = require('assert');
 const spec = require('../src');
 
 describe('Basic add tests', () => {
@@ -8,6 +8,6 @@ describe('Basic add tests', () => {
 
   const doc = spec.swaggerDoc('Xx');
   it('is a valid swagger', () => {
-    assert.isOk(true);
+    assert(true);
   })
 });

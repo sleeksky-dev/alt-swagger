@@ -3,6 +3,7 @@
  */
 require("./utils");
 const _ = require("lodash");
+const { toSwaggerSchema, pathParameters, toParameter} = require("./utils")
 
 const paths = {};
 const components = {};
@@ -22,7 +23,7 @@ function server(url, description) {
 
 function api(opt) {
   const spec = { parameters: [], responses: {}, description: "" };
-  const pathParams = _.pathParameters(opt.path);
+  const pathParams = pathParameters(opt.path);
   if (pathParams.length > 0) spec.parameters = pathParams;
 
   _.set(paths, `${opt.path}.${opt.method}`, spec);
@@ -30,14 +31,14 @@ function api(opt) {
   let ext = {};
 
   const req = (flatSch) => {
-    let schema = flatSch.match(/^#/) ? { $ref: flatSch } : _.toSwaggerSchema(flatSch);
+    let schema = flatSch.match(/^#/) ? { $ref: flatSch } : toSwaggerSchema(flatSch);
     spec.requestBody = {
       content: { "application/json": { schema } },
     };
     return ext;
   };
   const res = (code, flatSch) => {
-    let schema = flatSch.match(/^#/) ? { $ref: flatSch } : _.toSwaggerSchema(flatSch);
+    let schema = flatSch.match(/^#/) ? { $ref: flatSch } : toSwaggerSchema(flatSch);
     spec.responses[code] = {
       content: { [schema.type === "string" ? "text/plain" : "application/json"]: { schema } },
       description: "",
@@ -47,14 +48,14 @@ function api(opt) {
   const query = (strArr) => {
     if (!_.isArray(strArr)) strArr = [strArr];
     strArr.forEach((str) => {
-      spec.parameters.push(_.toParameter('query',str));
+      spec.parameters.push(toParameter('query',str));
     });
     return ext;
   };
   const header = (strArr) => {
     if (!_.isArray(strArr)) strArr = [strArr];
     strArr.forEach((str) => {
-      spec.parameters.push(_.toParameter('header',str));
+      spec.parameters.push(toParameter('header',str));
     });
     return ext;
   };
@@ -112,7 +113,7 @@ function _ref({ type, name, def }) {
 
 const ref = {
   schema(name, flatSch) {
-    return _ref({ type: "schemas", name, def: _.toSwaggerSchema(flatSch) });
+    return _ref({ type: "schemas", name, def: toSwaggerSchema(flatSch) });
   }
 }
 

@@ -3,6 +3,8 @@ Author: Yusuf Bhabhrawala
  */
 const _ = require("lodash");
 
+const {flatten, shape} = require("@sleeksky/alt-schema");
+
 const TYPES = {i: "integer", s: "string", b: "boolean", n: "number", o: "object", a: "array"};
 const RX_OBJ = /(\{[^\{\}\[\]]+\})/;
 const RX_ARR = /(\[[^\{\}\[\]]+\])/;
@@ -11,74 +13,33 @@ const RX_FLAT_ARR = /^\[([^\{\}\[\]]+)\]$/;
 const RX_FLAT_OBJ = /^\{([^\{\}\[\]]+)\}$/;
 
 function toSwaggerSchema(str) {
-  let nested = {};
-  function flatten(str) {
-    let m;
-    while (m = str.match(RX_OBJ) || str.match(RX_ARR)) {
-      let k = `$${Object.keys(nested).length}`;
-      nested[k] = m[0];
-      str = str.slice(0, m.index) + k + str.slice(m.index + m[0].length);
-    }
-    return str;
-  }
 
-  function getSchema(str) {
-    if (!_.isString(str)) throw new Error("Schema must be a string");
-    let m;
-    if (m = str.match(RX_NESTED)) str = nested[m[1]];
-
-    if (m = str.match(RX_FLAT_ARR)) {
-
-      let schema = { type: "array" };
-      let items = m[1].split(",").map(s => getSchema(`:${s}`)); // extra : to filter out key
-      schema.items = items.length > 1 ? {oneOf: items} : items[0];
-      return schema;
-
-    } else if (m = str.match(RX_FLAT_OBJ)) {
-
-      let schema = { type: "object" };
-      let props = m[1];
-      schema.properties = props.split(",").reduce((acc, curr) => {
-        let k = curr.split(":")[0];
-        acc[k] = getSchema(curr);
-        return acc;
-      }, {});
-      return schema;
-
-    } else { // scalar type
-
-      let [key, type, def] = str.split(":");
-      let required = null;
-      if (type && type.match(/^\?/)) {
-        type = type.replace(/^\?/, "");
-        required = false;
-      }
-      if (type && type.match(/^\+/)) {
-        type = type.replace(/^\+/, "");
-        required = true;
-      }
-      if (type && TYPES[type]) type = TYPES[type];
-      else if (type && type.match(RX_NESTED)) type = getSchema(type);
-      else type = type || "string";
-
-      let schema = _.isString(type) ? { type } : type;
-      if (def) schema.default = def;
-      if (required !== null) schema.required = required;
-      // {type,default,required}
-      return schema;
+  function traverse(schema, obj) {
+    if (_.isArray(obj)) {
+      schema.type = "array";
+      schema.items = {};
+      traverse(schema.items, obj[0]);
+    } else if (_.isObject(obj)) {
+      schema.type = "object";
+      schema.properties = {};
+      _.forOwn(obj, (v, k) => {
+        schema.properties[k] = {};
+        traverse(schema.properties[k], v);
+      });
+    } else {
+      schema.type = typeof obj;
     }
   }
-  str = str.replace(/\s/g, "");
+
   try {
-    str = flatten(str);
-    let schema = getSchema(str);
-    schema.description = "";
+    let obj = shape({}, str, {excludeOptional: false});
+    let schema = {};
+    traverse(schema, obj);
     return schema;
   } catch (error) {
     throw new Error(`Malformed schema: ${str}`);
   }
 }
-_.mixin({ toSwaggerSchema });
 
 function pathParameters(str) {
   let params = [];
@@ -94,7 +55,6 @@ function pathParameters(str) {
   }
   return params;
 }
-_.mixin({ pathParameters });
 
 // header:?token
 function toParameter(inType, str) {
@@ -115,4 +75,5 @@ function toParameter(inType, str) {
     schema: { type }
   }
 }
-_.mixin({ toParameter });
+
+module.exports = {toSwaggerSchema, pathParameters, toParameter};
