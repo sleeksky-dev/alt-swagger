@@ -3,7 +3,7 @@ Author: Yusuf Bhabhrawala
  */
 const _ = require("lodash");
 
-const {flatten, shape} = require("@sleeksky/alt-schema");
+const {typeShape} = require("@sleeksky/alt-schema");
 
 const TYPES = {i: "integer", s: "string", b: "boolean", n: "number", o: "object", a: "array"};
 const RX_OBJ = /(\{[^\{\}\[\]]+\})/;
@@ -27,12 +27,19 @@ function toSwaggerSchema(str) {
         traverse(schema.properties[k], v);
       });
     } else {
-      schema.type = typeof obj;
+      let [optional, type, def] = obj.split(":");
+      schema.type = type;
+      if (def !== '') {
+        if (type === 'number' || type === 'integer') def = def*1;
+        if (type === 'boolean') def = ['true','1'].indexOf(def) > -1 ? true : false;
+        schema.default = def;
+      }
+      if (optional !== '?') schema.required = true;
     }
   }
 
   try {
-    let obj = shape({}, str, {excludeOptional: false});
+    let obj = typeShape(str);
     let schema = {};
     traverse(schema, obj);
     return schema;
