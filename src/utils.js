@@ -66,7 +66,8 @@ function pathParameters(str) {
 // header:?token
 function toParameter(inType, str) {
   if (!_.isString(str)) return str;
-  let [name, type] = str.split(":");
+  str = str.replace(/ /g, "");
+  let [name, type, def] = str.split(":");
   let required = true;
   if (type && type.match(/^\?/)) {
     type = type.replace(/^\?/, "");
@@ -74,12 +75,14 @@ function toParameter(inType, str) {
   }
   if (type && TYPES[type]) type = TYPES[type];
   else type = "string";
+  let schema = { type };
+  if (def) schema.default = def;
 
   return {
     name,
     in: inType,
     required,
-    schema: { type }
+    schema
   }
 }
 

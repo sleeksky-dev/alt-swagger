@@ -9,6 +9,12 @@ docs.get('/:id')
   .query(['a','b:?'])
   .res(200, '{hello,world}');
 
+docs.get('/:id/query')
+  .tag("dot-notation")
+  .query('a:s:hello,b:i:10')
+  .res(200, '{hello,world}');
+
+
 let refRequest = docs.ref.schema('example','{id:i:1,name:s:foo,label:{id:i:2,name:?s:bar},arr:[{a:b:false}]}');
 docs.put('/:id')
   .tag("dot-notation")
