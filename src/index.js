@@ -53,7 +53,7 @@ function api(opt) {
     return ext;
   };
   const header = (strArr) => {
-    if (!_.isArray(strArr)) strArr = [strArr];
+    if (!_.isArray(strArr)) strArr = strArr.split(",");
     strArr.forEach((str) => {
       spec.parameters.push(toParameter('header',str));
     });
