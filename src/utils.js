@@ -28,13 +28,16 @@ function toSwaggerSchema(str) {
       });
     } else {
       let [optional, type, def] = obj.split(":");
+      optional = (optional === '?') ? true : false;
       schema.type = type;
       if (def !== '') {
         if (type === 'number' || type === 'integer') def = def*1;
         if (type === 'boolean') def = ['true','1'].indexOf(def) > -1 ? true : false;
         schema.default = def;
+      } else if (optional) {
+        schema.default = null;
       }
-      if (optional !== '?') schema.required = true;
+      if (!optional) schema.required = true;
     }
   }
 

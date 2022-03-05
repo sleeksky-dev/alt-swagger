@@ -15,7 +15,7 @@ docs.get('/:id/query')
   .res(200, '{hello,world}');
 
 
-let refRequest = docs.ref.schema('example','{id:i:1,name:s:foo,label:{id:i:2,name:?s:bar},arr:[{a:b:false}]}');
+let refRequest = docs.ref.schema('example','{id:i:1,name:s:foo,optionalString:?s,optionalInt:?i,optionalBool:?b,defOptionalString:s:hello,defOptionalInt:i:12,defOptionalBool:b:false,label:{id:i:2,name:?s:bar},arr:[{a:b:false}]}');
 docs.put('/:id')
   .tag("dot-notation")
   .req(refRequest)
