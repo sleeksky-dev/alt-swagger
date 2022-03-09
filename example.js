@@ -23,14 +23,14 @@ docs.put('/:id')
 
 docs.patch('/:id')
   .tag("dot-notation")
-  .req('{a,b}')
+  .req('{id:i:1,name:s:foo,optionalString:?s,optionalInt:?i,optionalBool:?b,defOptionalString:s:hello,defOptionalInt:i:12,defOptionalBool:b:false,label:{id:i:2,name:?s:bar},arr:[{a:b:false}]}')
   .res(200, '{hello,world}');
 
 docs.post('/:id/some/:more')
   .tag("dot-notation")
   .summary('quick api docs examples')
   .desc("some description")
-  .req('{id:i:1,name:s:foo,label:{id:i:2,name:?s:bar}}')
+  .req('{id:i:1,mode:contentmode,name:s:foo,label:{id:i:2,name:?s:bar}}')
   .header('bearer:?')
   .query('qry:i')
   .res(200,'[{hello:s:test}]');

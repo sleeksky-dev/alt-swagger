@@ -29,6 +29,7 @@ function toSwaggerSchema(str) {
     } else {
       let [optional, type, def] = obj.split(":");
       optional = (optional === '?') ? true : false;
+      if (['string','number','boolean','integer','array','object'].indexOf(type) < 0) type = "string"; 
       schema.type = type;
       if (def !== '') {
         if (type === 'number' || type === 'integer') def = def*1;
