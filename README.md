@@ -15,6 +15,10 @@ npm install -s @sleeksky/alt-swagger
 
 const docs = require('@sleeksky/alt-swagger');
 
+# Usage
+
+See example.js
+
 # License
 
 MIT © SleekSky
