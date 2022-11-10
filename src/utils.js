@@ -80,7 +80,7 @@ function toParameter(inType, str) {
   if (type && TYPES[type]) type = TYPES[type];
   else type = "string";
   let schema = { type };
-  if (def) schema.default = def;
+  if (def) schema.example = def;
 
   return {
     name,
