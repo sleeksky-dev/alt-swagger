@@ -3,7 +3,7 @@
  */
 require("./utils");
 const _ = require("lodash");
-const { toSwaggerSchema, pathParameters, toParameter} = require("./utils")
+const { toSwaggerSchema, pathParameters, pathClean, toParameter} = require("./utils")
 
 const paths = {};
 const components = {};
@@ -26,7 +26,7 @@ function api(opt) {
   const pathParams = pathParameters(opt.path);
   if (pathParams.length > 0) spec.parameters = pathParams;
 
-  _.set(paths, `${opt.path}.${opt.method}`, spec);
+  _.set(paths, `${pathClean(opt.path)}.${opt.method}`, spec);
 
   let ext = {};
 

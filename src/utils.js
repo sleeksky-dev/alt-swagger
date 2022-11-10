@@ -12,6 +12,10 @@ const RX_NESTED = /^\:?(\$[0-9]+)$/;
 const RX_FLAT_ARR = /^\[([^\{\}\[\]]+)\]$/;
 const RX_FLAT_OBJ = /^\{([^\{\}\[\]]+)\}$/;
 
+const RX_BRACE = /\{([^\}]+)\}/g;
+const RX_COLON = /\:([^\/]+)/g;
+
+
 function toSwaggerSchema(str) {
 
   function traverse(schema, obj) {
@@ -54,17 +58,21 @@ function toSwaggerSchema(str) {
 
 function pathParameters(str) {
   let params = [];
-  const RX_BRACE = /\{([^\}]+)\}/g;
-  const RX_COLON = /\:([^\/]+)/g;
   let matches = str.match(RX_BRACE);
   if (!matches) matches = str.match(RX_COLON);
   if (matches) {
     params = matches.map(m => {
-      let p = m.replace(/[\{\}\:]/g, "");
-      return { in: "path", name: p, schema: { type: "string" }, required: true };
+      let [p, def] = m.replace(/^[\{\:]/,"").replace(/[\}]$/,"").split(":");
+      if (!def) def = "";
+      return { in: "path", name: p, schema: { type: "string", example: def }, required: true };
     });
   }
   return params;
+}
+
+function pathClean(path) {
+  if (path.match(RX_BRACE)) return path.replace(RX_BRACE, m => `${m.split(":")[0]}}`)
+  return path;
 }
 
 // header:?token
@@ -90,4 +98,4 @@ function toParameter(inType, str) {
   }
 }
 
-module.exports = {toSwaggerSchema, pathParameters, toParameter};
+module.exports = {toSwaggerSchema, pathParameters, pathClean, toParameter};
