@@ -121,9 +121,9 @@ function tag(name, description) {
   tags.push({ name, description });
 }
 
-function swaggerDoc(title = "API Docs") {
+function swaggerDoc(title) {
   return {
-    info: { title, version: "1.0.0" },
+    info: { title: title || "", version: "1.0.0" },
     openapi: "3.0.0",
     servers,
     tags,

@@ -38,9 +38,9 @@ function toSwaggerSchema(str) {
       if (def !== '') {
         if (type === 'number' || type === 'integer') def = def*1;
         if (type === 'boolean') def = ['true','1'].indexOf(def) > -1 ? true : false;
-        schema.default = def;
+        schema.example = def;
       } else if (optional) {
-        schema.default = null;
+        // schema.default = null;
       }
       if (!optional) schema.required = true;
     }
