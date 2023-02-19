@@ -46,12 +46,14 @@ docs.del('/:id')
 docs.post('/:id/other/:more', {
   tag: 'options',
   desc: 'some description',
-  summary: 'quick api docs examples',
+  summary: 'this summary must not show',
   req: '{id:i:1,name:s:foo,label:{id:i:2,name:?s:bar}}',
   header: 'bearer:?',
   query: 'qry:i',
   "200": '[{hello:s:test}]'
 });
+
+docs.post('/:id/other/:more').summary('quick api docs examples')
 
 docs.patch('/:id/invalid').remove();
 

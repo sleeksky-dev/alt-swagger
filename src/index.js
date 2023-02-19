@@ -22,11 +22,14 @@ function server(url, description) {
 }
 
 function api(opt) {
-  const spec = { parameters: [], responses: {}, description: "" };
-  const pathParams = pathParameters(opt.path);
-  if (pathParams.length > 0) spec.parameters = pathParams;
-
-  _.set(paths, `${pathClean(opt.path)}.${opt.method}`, spec);
+  let path = `${pathClean(opt.path)}.${opt.method}`;
+  let spec = _.get(paths, path, false);
+  if (!spec) {
+    spec = { parameters: [], responses: {}, description: "" };
+    const pathParams = pathParameters(opt.path);
+    if (pathParams.length > 0) spec.parameters = pathParams;
+    _.set(paths, path, spec);
+  }
 
   let ext = {};
 
