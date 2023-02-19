@@ -63,8 +63,9 @@ function api(opt) {
   const summary = (str) => { spec.summary = str; return ext; };
   const desc = (str) => { spec.description = str; return ext; };
   const deprecate = () => { spec.deprecated = true; return ext; };
+  const remove = () => { _.unset(paths, `${pathClean(opt.path)}.${opt.method}`); };
 
-  Object.assign(ext, { req, res, query, header, tag, summary, desc, deprecate });
+  Object.assign(ext, { req, res, query, header, tag, summary, desc, deprecate, remove });
 
   // support all ext in parameters
   Object.keys(ext).forEach(k => {

@@ -26,6 +26,8 @@ docs.patch('/:id')
   .req('{id:i:1,name:s:foo,optionalString:?s,optionalInt:?i,optionalBool:?b,defOptionalString:s:hello,defOptionalInt:i:12,defOptionalBool:b:false,label:{id:i:2,name:?s:bar},arr:[{a:b:false}]}')
   .res(200, '{hello,world}');
 
+docs.patch('/:id/invalid').tag("dot-notation").summary("This must not show");
+
 docs.post('/:id/some/:more')
   .tag("dot-notation")
   .summary('quick api docs examples')
@@ -51,6 +53,7 @@ docs.post('/:id/other/:more', {
   "200": '[{hello:s:test}]'
 });
 
+docs.patch('/:id/invalid').remove();
 
 app.use('/', swaggerUI.serve, swaggerUI.setup(docs.swaggerDoc('Examples')));
 
