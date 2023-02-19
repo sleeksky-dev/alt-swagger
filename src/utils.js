@@ -71,7 +71,7 @@ function pathParameters(str) {
 }
 
 function pathClean(path) {
-  if (path.match(RX_BRACE)) return path.replace(RX_BRACE, m => `${m.split(":")[0]}}`)
+  if (path.match(RX_BRACE)) return path.replace(RX_BRACE, m => `${m.split(/(\:.+)?\}/)[0]}}`)
   return path;
 }
 
