@@ -57,9 +57,12 @@ docs.post('/:id/other/:more').summary('quick api docs examples')
 
 docs.patch('/:id/invalid').remove();
 
+docs.security('bearerAuth', {});
+docs.get('/:id/security').security('bearerAuth');
+
 app.use('/', swaggerUI.serve, swaggerUI.setup(docs.swaggerDoc('Examples')));
 
-let port = process.env['PORT'] || 9000;
+let port = process.env['PORT'] || 9005;
 app.listen(port, function () {
   console.log(`server started on port ${port}`)
 })

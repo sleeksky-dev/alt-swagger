@@ -65,10 +65,11 @@ function api(opt) {
   const tag = (str) => { spec.tags = [str]; return ext; };
   const summary = (str) => { spec.summary = str; return ext; };
   const desc = (str) => { spec.description = str; return ext; };
+  const security = (str) => { spec.security = [ { [str]: []}]; return ext; }
   const deprecate = () => { spec.deprecated = true; return ext; };
   const remove = () => { _.unset(paths, `${pathClean(opt.path)}.${opt.method}`); };
 
-  Object.assign(ext, { req, res, query, header, tag, summary, desc, deprecate, remove });
+  Object.assign(ext, { req, res, query, header, tag, summary, desc, deprecate, remove, security });
 
   // support all ext in parameters
   Object.keys(ext).forEach(k => {
@@ -109,6 +110,12 @@ function del(path = "", opt = {}) {
   return api(opt);
 }
 
+function security(name, {type = "http", schema = "bearer", bearerFormat = null, required = true}) {
+  components.securitySchemes = components.securitySchemes || {};
+  components.securitySchemes[name] = { type, scheme: schema, bearerFormat, "in": "header", required };
+  return `#/components/securitySchemes/${name}`;
+}
+
 function _ref({ type, name, def }) {
   components[type] = components[type] || {};
   components[type][name] = def;
@@ -145,6 +152,7 @@ module.exports = {
   put,
   patch,
   del,
+  security,
   swaggerDoc,
   reset,
 };
