@@ -60,6 +60,13 @@ docs.patch('/:id/invalid').remove();
 docs.security('bearerAuth', {});
 docs.get('/:id/security').security('bearerAuth');
 
+docs.get('/to/remove/:id');
+docs.remove({path: '/to/remove/:id'});
+
+docs.get('/to/remove/:tag').tag('to-remove');
+docs.post('/to/remove').tag('to-remove');
+docs.remove({tag: 'to-remove'});
+
 app.use('/', swaggerUI.serve, swaggerUI.setup(docs.swaggerDoc('Examples')));
 
 let port = process.env['PORT'] || 9005;

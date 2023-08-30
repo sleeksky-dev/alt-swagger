@@ -1,6 +1,6 @@
 {
   "name": "@sleeksky/alt-swagger",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Quickly spec your APIs for Swagger / OpenAPI interface",
   "main": "./src/index.js",
   "scripts": {

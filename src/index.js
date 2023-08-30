@@ -110,6 +110,18 @@ function del(path = "", opt = {}) {
   return api(opt);
 }
 
+function remove({path=null, tag=null}) {
+  if (path) _.unset(paths, `${pathClean(path)}`);
+  if (tag) {
+    // remote all the paths with this tag
+    Object.keys(paths).forEach(p => {
+      Object.keys(paths[p]).forEach(method => {
+        if (paths[p][method].tags && paths[p][method].tags.includes(tag)) _.unset(paths[p], method);
+      })
+    });
+  }
+}
+
 function security(name, {type = "http", schema = "bearer", bearerFormat = null, required = true}) {
   components.securitySchemes = components.securitySchemes || {};
   components.securitySchemes[name] = { type, scheme: schema, bearerFormat, "in": "header", required };
@@ -155,4 +167,5 @@ module.exports = {
   security,
   swaggerDoc,
   reset,
+  remove,
 };
