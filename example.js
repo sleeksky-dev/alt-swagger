@@ -1,8 +1,10 @@
 const express = require('express')
 const app = express()
 const swaggerUI = require('swagger-ui-express')
-const docs = require('./src');
+const docs = require('./dist');
 docs.server('/', 'Localhost')
+
+docs.get('/some-api').tag("demo").res(200, '{hello,world}');
 
 docs.get('/:id')
   .tag("dot-notation")
