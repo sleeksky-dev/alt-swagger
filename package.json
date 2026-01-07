@@ -1,7 +1,7 @@
 {
   "name": "@sleeksky/alt-swagger",
   "version": "3.0.0",
-  "description": "Fluent API for generating OpenAPI 3.0 specifications with TypeScript support",
+  "description": "A fluent, programmatic API for generating OpenAPI 3.0 specifications with TypeScript support. Define REST API endpoints, schemas, parameters, and security using a simple, chainable syntax.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -18,21 +18,11 @@
     "url": "git+https://github.com/sleeksky-dev/alt-swagger"
   },
   "keywords": [
-    "openapi",
-    "openapi3",
     "swagger",
-    "api-specification",
-    "api-documentation",
-    "rest-api",
-    "typescript",
-    "fluent-api",
-    "schema",
-    "nodejs",
+    "open-api",
+    "api-spec",
     "express",
-    "fastify",
-    "hapi",
-    "api-generator",
-    "documentation-generator"
+    "javascript"
   ],
   "author": "Yusuf <yusuf@sleeksky.com>",
   "license": "MIT",

@@ -46,3 +46,4 @@ others
 
 dist/
 pnpm-lock.yaml
+.npmrc
