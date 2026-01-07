@@ -1,6 +1,6 @@
 {
   "name": "@sleeksky/alt-swagger",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "A fluent, programmatic API for generating OpenAPI 3.0 specifications with TypeScript support. Define REST API endpoints, schemas, parameters, and security using a simple, chainable syntax.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
