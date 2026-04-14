@@ -263,7 +263,7 @@ describe('Alt Swagger Library Tests', () => {
     });
 
     it('parses all shorthand notations together', () => {
-      spec.post('/users/{id}?fields:s^authorization??{name:s,age:i}#Users').res(200, '{id:i,name:s}');
+      spec.post('/users/{id}?fields:s ^authorization ??{name:s,age:i} #Users').res(200, '{id:i,name:s}');
       const doc = spec.swaggerDoc();
       const pathKey = Object.keys(doc.paths)[0];
       assert.equal(pathKey, '/users/{id}');
@@ -281,7 +281,7 @@ describe('Alt Swagger Library Tests', () => {
     });
 
     it('works with other HTTP methods', () => {
-      spec.post('/users?notify:b#Users').req('{name:s}').res(201, '{id:i,name:s}');
+      spec.post('/users?notify:b #Users').req('{name:s}').res(201, '{id:i,name:s}');
       spec.put('/users/{id}?notify:b#Users').req('{name:s}').res(200, '{id:i,name:s}');
       spec.del('/users/{id}#Users').res(204, '');
       const doc = spec.swaggerDoc();

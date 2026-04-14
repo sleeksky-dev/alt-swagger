@@ -99,7 +99,7 @@ interface ApiExtension {
 
 function api(opt: ApiOptions): ApiExtension {
   // Parse path for shortcuts: path?query^header??req#tag
-  let pathStr = opt.path;
+  let pathStr = opt.path.replace(/\s/g, "");
   
   // Check for # (tag) - must be last in string
   const hashIndex = pathStr.indexOf('#');
