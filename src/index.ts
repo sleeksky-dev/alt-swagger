@@ -85,6 +85,7 @@ interface ApiOptions {
 
 interface ApiExtension {
   req: (flatSch: string) => ApiExtension;
+  body: (flatSch: string) => ApiExtension;
   res: (code: string | number, flatSch: string) => ApiExtension;
   query: (strArr: string | string[]) => ApiExtension;
   header: (strArr: string | string[]) => ApiExtension;
@@ -166,7 +167,8 @@ function api(opt: ApiOptions): ApiExtension {
   const deprecate = (): ApiExtension => { spec.deprecated = true; return ext; };
   const remove = (): void => { _.unset(paths, `${pathClean(opt.path)}.${opt.method}`); };
 
-  Object.assign(ext, { req, res, query, header, tag, summary, desc, deprecate, remove, security });
+  const body = req; // alias for req
+  Object.assign(ext, { req, body, res, query, header, tag, summary, desc, deprecate, remove, security });
 
   // support all ext in parameters
   Object.keys(ext).forEach(k => {
