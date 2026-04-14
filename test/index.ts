@@ -193,6 +193,70 @@ describe('Alt Swagger Library Tests', () => {
     });
   });
 
+  describe('Path shorthand notation', () => {
+    it('parses query parameters from path after ?', () => {
+      spec.get('/users?limit:i:10,offset:i:0').res(200, '[{id:i,name:s}]');
+      const doc = spec.swaggerDoc();
+      const params = doc.paths['/users'].get.parameters;
+      assert.equal(params.length, 2);
+      assert.equal(params[0].name, 'limit');
+      assert.equal(params[0].schema.example, 10);
+      assert.equal(params[1].name, 'offset');
+      assert.equal(params[1].schema.example, 0);
+    });
+
+    it('parses tag from path after #', () => {
+      spec.get('/users#Users').res(200, '[{id:i,name:s}]');
+      const doc = spec.swaggerDoc();
+      assert.deepEqual(doc.paths['/users'].get.tags, ['Users']);
+    });
+
+    it('parses both query and tag from path', () => {
+      spec.get('/users?limit:i:10#Users').res(200, '[{id:i,name:s}]');
+      const doc = spec.swaggerDoc();
+      const pathSpec = doc.paths['/users'].get;
+      assert.equal(pathSpec.parameters.length, 1);
+      assert.equal(pathSpec.parameters[0].name, 'limit');
+      assert.deepEqual(pathSpec.tags, ['Users']);
+    });
+
+    it('works with path parameters and shorthand', () => {
+      spec.get('/users/{id}?fields:s#Users').res(200, '{id:i,name:s}');
+      const doc = spec.swaggerDoc();
+      const pathKey = Object.keys(doc.paths)[0];
+      assert.equal(pathKey, '/users/{id}');
+      const pathSpec = doc.paths[pathKey].get;
+      assert.equal(pathSpec.parameters.length, 2); // path param + query param
+      assert.equal(pathSpec.parameters[0].name, 'id');
+      assert.equal(pathSpec.parameters[1].name, 'fields');
+      assert.deepEqual(pathSpec.tags, ['Users']);
+    });
+
+    it('explicit options override path shorthand', () => {
+      spec.get('/users?limit:i:10#Users', { query: 'page:i:1', tag: 'Admin' }).res(200, '[{id:i}]');
+      const doc = spec.swaggerDoc();
+      const pathSpec = doc.paths['/users'].get;
+      assert.equal(pathSpec.parameters.length, 1);
+      assert.equal(pathSpec.parameters[0].name, 'page');
+      assert.deepEqual(pathSpec.tags, ['Admin']);
+    });
+
+    it('works with other HTTP methods', () => {
+      spec.post('/users?notify:b#Users').req('{name:s}').res(201, '{id:i,name:s}');
+      spec.put('/users/{id}?notify:b#Users').req('{name:s}').res(200, '{id:i,name:s}');
+      spec.del('/users/{id}#Users').res(204, '');
+      const doc = spec.swaggerDoc();
+      
+      assert.deepEqual(doc.paths['/users'].post.tags, ['Users']);
+      assert.equal(doc.paths['/users'].post.parameters[0].name, 'notify');
+      
+      assert.deepEqual(doc.paths['/users/{id}'].put.tags, ['Users']);
+      assert.equal(doc.paths['/users/{id}'].put.parameters.length, 2);
+      
+      assert.deepEqual(doc.paths['/users/{id}'].delete.tags, ['Users']);
+    });
+  });
+
   describe('Advanced features', () => {
     it('handles complex schemas', () => {
       spec.post('/users').req('{name:s,profile:{age:i,hobbies:[s]}}').res(201, '{id:i,name:s,profile:{age:i,hobbies:[s]}}');

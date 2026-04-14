@@ -97,6 +97,28 @@ interface ApiExtension {
 }
 
 function api(opt: ApiOptions): ApiExtension {
+  // Parse path for query and tag shortcuts
+  let pathStr = opt.path;
+  
+  // Check for # (tag)
+  const hashIndex = pathStr.indexOf('#');
+  if (hashIndex !== -1) {
+    const tagFromPath = pathStr.substring(hashIndex + 1);
+    pathStr = pathStr.substring(0, hashIndex);
+    if (!opt.tag) opt.tag = tagFromPath;
+  }
+  
+  // Check for ? (query)
+  const queryIndex = pathStr.indexOf('?');
+  if (queryIndex !== -1) {
+    const queryFromPath = pathStr.substring(queryIndex + 1);
+    pathStr = pathStr.substring(0, queryIndex);
+    if (!opt.query) opt.query = queryFromPath;
+  }
+  
+  // Use cleaned path
+  opt.path = pathStr;
+  
   let path = `${pathClean(opt.path)}.${opt.method}`;
   let spec: PathSpec = _.get(paths as any, path, null) as PathSpec;
   if (!spec) {

@@ -7,6 +7,7 @@ Built on top of [@sleeksky/alt-schema](https://github.com/sleeksky-dev/alt-schem
 ## Features
 
 - 🚀 **Fluent API**: Chain methods to define endpoints declaratively
+- ⚡ **Path Shorthand**: Define query parameters and tags directly in the path (`/users?limit:i#Users`)
 - 📝 **Schema-first**: Define request/response schemas using simple string syntax
 - 🔒 **Security**: Built-in support for authentication schemes
 - 🏷️ **Rich Metadata**: Tags, summaries, descriptions, deprecation
@@ -32,13 +33,12 @@ const swagger = require('@sleeksky/alt-swagger');
 // Define your API
 swagger.server('https://api.example.com', 'Production API');
 
-// Define endpoints
-swagger.get('/users')
+// Define endpoints with shorthand notation
+swagger.get('/users?limit:i:10,offset:i:0#Users')
   .summary('Get users')
-  .query('limit:i:10,offset:i:0')
   .res(200, '[{id:i,name:s,email:s}]');
 
-swagger.post('/users')
+swagger.post('/users#Users')
   .summary('Create user')
   .req('{name:s,email:s}')
   .res(201, '{id:i,name:s,email:s}')
@@ -133,6 +133,62 @@ swagger.get('/users/{id}')
 swagger.get('/users/{id:123}')
   .res(200, '{id:i, name:s}');
 ```
+
+### Path Shorthand Notation
+
+You can define query parameters and tags directly in the path string for more concise endpoint definitions:
+
+#### Query Parameters (`?`)
+Add query parameters after `?` in the path:
+
+```javascript
+// Shorthand for .query('limit:i:10,offset:i:0')
+swagger.get('/users?limit:i:10,offset:i:0')
+  .res(200, '[{id:i, name:s}]');
+
+// Equivalent to:
+swagger.get('/users')
+  .query('limit:i:10,offset:i:0')
+  .res(200, '[{id:i, name:s}]');
+```
+
+#### Tags (`#`)
+Add tags after `#` in the path:
+
+```javascript
+// Shorthand for .tag('Users')
+swagger.get('/users#Users')
+  .res(200, '[{id:i, name:s}]');
+
+// Equivalent to:
+swagger.get('/users')
+  .tag('Users')
+  .res(200, '[{id:i, name:s}]');
+```
+
+#### Combined Shorthand
+Use both query parameters and tags together:
+
+```javascript
+// Combines query and tag shorthand
+swagger.get('/users?limit:i:10,offset:i:0#Users')
+  .summary('List users')
+  .res(200, '[{id:i, name:s}]');
+
+// Works with path parameters too
+swagger.get('/users/{id}?fields:s#Users')
+  .res(200, '{id:i, name:s, email:?s}');
+
+// Shorthand with POST, PUT, DELETE
+swagger.post('/users?notify:b:true#Users')
+  .req('{name:s, email:s}')
+  .res(201, '{id:i, name:s, email:s}');
+
+swagger.del('/users/{id}#Users')
+  .res(204);
+```
+
+**Note**: Explicit method calls (`.query()`, `.tag()`) take precedence over path shorthand if both are used.
 
 ### Fluent API Methods
 
