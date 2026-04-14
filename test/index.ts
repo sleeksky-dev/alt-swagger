@@ -241,6 +241,45 @@ describe('Alt Swagger Library Tests', () => {
       assert.deepEqual(pathSpec.tags, ['Admin']);
     });
 
+    it('parses header parameters from path after ^', () => {
+      spec.get('/users^authorization,x-api-key:?#Users').res(200, '[{id:i,name:s}]');
+      const doc = spec.swaggerDoc();
+      const params = doc.paths['/users'].get.parameters;
+      assert.equal(params.length, 2);
+      assert.equal(params[0].name, 'authorization');
+      assert.equal(params[0].in, 'header');
+      assert.equal(params[1].name, 'x-api-key');
+      assert.equal(params[1].in, 'header');
+      assert.equal(params[1].required, false);
+    });
+
+    it('parses request body from path after ??', () => {
+      spec.post('/users??{name:s,email:s}#Users').res(201, '{id:i,name:s}');
+      const doc = spec.swaggerDoc();
+      const pathSpec = doc.paths['/users'].post;
+      assert(pathSpec.requestBody);
+      assert(pathSpec.requestBody.content['application/json']);
+      assert.deepEqual(pathSpec.tags, ['Users']);
+    });
+
+    it('parses all shorthand notations together', () => {
+      spec.post('/users/{id}?fields:s^authorization??{name:s,age:i}#Users').res(200, '{id:i,name:s}');
+      const doc = spec.swaggerDoc();
+      const pathKey = Object.keys(doc.paths)[0];
+      assert.equal(pathKey, '/users/{id}');
+      const pathSpec = doc.paths[pathKey].post;
+      // path param + query param + header param
+      assert.equal(pathSpec.parameters.length, 3);
+      assert.equal(pathSpec.parameters[0].name, 'id');
+      assert.equal(pathSpec.parameters[0].in, 'path');
+      assert.equal(pathSpec.parameters[1].name, 'fields');
+      assert.equal(pathSpec.parameters[1].in, 'query');
+      assert.equal(pathSpec.parameters[2].name, 'authorization');
+      assert.equal(pathSpec.parameters[2].in, 'header');
+      assert(pathSpec.requestBody);
+      assert.deepEqual(pathSpec.tags, ['Users']);
+    });
+
     it('works with other HTTP methods', () => {
       spec.post('/users?notify:b#Users').req('{name:s}').res(201, '{id:i,name:s}');
       spec.put('/users/{id}?notify:b#Users').req('{name:s}').res(200, '{id:i,name:s}');

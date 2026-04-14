@@ -98,15 +98,31 @@ interface ApiExtension {
 }
 
 function api(opt: ApiOptions): ApiExtension {
-  // Parse path for query and tag shortcuts
+  // Parse path for shortcuts: path?query^header??req#tag
   let pathStr = opt.path;
   
-  // Check for # (tag)
+  // Check for # (tag) - must be last in string
   const hashIndex = pathStr.indexOf('#');
   if (hashIndex !== -1) {
     const tagFromPath = pathStr.substring(hashIndex + 1);
     pathStr = pathStr.substring(0, hashIndex);
     if (!opt.tag) opt.tag = tagFromPath;
+  }
+  
+  // Check for ?? (request body)
+  const doubleQIndex = pathStr.indexOf('??');
+  if (doubleQIndex !== -1) {
+    const reqFromPath = pathStr.substring(doubleQIndex + 2);
+    pathStr = pathStr.substring(0, doubleQIndex);
+    if (!opt.req) opt.req = reqFromPath;
+  }
+  
+  // Check for ^ (header)
+  const caretIndex = pathStr.indexOf('^');
+  if (caretIndex !== -1) {
+    const headerFromPath = pathStr.substring(caretIndex + 1);
+    pathStr = pathStr.substring(0, caretIndex);
+    if (!opt.header) opt.header = headerFromPath;
   }
   
   // Check for ? (query)

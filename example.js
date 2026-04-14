@@ -6,6 +6,14 @@ docs.server('/', 'Localhost')
 
 docs.get('/some-api').tag("demo").res(200, '{hello,world}');
 
+// Path shorthand examples
+docs.get('/shorthand/query?limit:i:10,offset:i:0#shorthand').res(200, '[{id:i,name:s}]');
+docs.get('/shorthand/header^authorization,x-api-key:?#shorthand').res(200, '{data:s}');
+docs.post('/shorthand/body??{name:s,email:s}#shorthand').res(201, '{id:i,name:s}');
+docs.post('/shorthand/all?notify:b^authorization??{name:s,age:i}#shorthand')
+  .summary('All shorthand notations combined')
+  .res(201, '{id:i,name:s,age:i}');
+
 docs.get('/:id')
   .tag("dot-notation")
   .query(['a','b:?'])

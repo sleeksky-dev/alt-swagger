@@ -7,7 +7,7 @@ Built on top of [@sleeksky/alt-schema](https://github.com/sleeksky-dev/alt-schem
 ## Features
 
 - 🚀 **Fluent API**: Chain methods to define endpoints declaratively
-- ⚡ **Path Shorthand**: Define query parameters and tags directly in the path (`/users?limit:i#Users`)
+- ⚡ **Path Shorthand**: Define query, headers, body, and tags directly in the path (`/users?limit:i^auth??{name:s}#Users`)
 - 📝 **Schema-first**: Define request/response schemas using simple string syntax
 - 🔒 **Security**: Built-in support for authentication schemes
 - 🏷️ **Rich Metadata**: Tags, summaries, descriptions, deprecation
@@ -136,7 +136,9 @@ swagger.get('/users/{id:123}')
 
 ### Path Shorthand Notation
 
-You can define query parameters and tags directly in the path string for more concise endpoint definitions:
+You can define query parameters, headers, request body, and tags directly in the path string for more concise endpoint definitions.
+
+**Format**: `path?query^header??requestBody#tag`
 
 #### Query Parameters (`?`)
 Add query parameters after `?` in the path:
@@ -152,8 +154,36 @@ swagger.get('/users')
   .res(200, '[{id:i, name:s}]');
 ```
 
+#### Header Parameters (`^`)
+Add header parameters after `^` in the path:
+
+```javascript
+// Shorthand for .header('authorization,x-api-key:?')
+swagger.get('/users^authorization,x-api-key:?')
+  .res(200, '[{id:i, name:s}]');
+
+// Equivalent to:
+swagger.get('/users')
+  .header('authorization,x-api-key:?')
+  .res(200, '[{id:i, name:s}]');
+```
+
+#### Request Body (`??`)
+Add request body schema after `??` in the path:
+
+```javascript
+// Shorthand for .req('{name:s,email:s}')
+swagger.post('/users??{name:s,email:s}')
+  .res(201, '{id:i, name:s, email:s}');
+
+// Equivalent to:
+swagger.post('/users')
+  .req('{name:s,email:s}')
+  .res(201, '{id:i, name:s, email:s}');
+```
+
 #### Tags (`#`)
-Add tags after `#` in the path:
+Add tags after `#` in the path (must be last):
 
 ```javascript
 // Shorthand for .tag('Users')
@@ -167,28 +197,31 @@ swagger.get('/users')
 ```
 
 #### Combined Shorthand
-Use both query parameters and tags together:
+Use all shorthand notations together:
 
 ```javascript
-// Combines query and tag shorthand
+// Full shorthand: path?query^header??body#tag
+swagger.post('/users?notify:b^authorization??{name:s,email:s}#Users')
+  .summary('Create user')
+  .res(201, '{id:i, name:s, email:s}');
+
+// Works with path parameters too
+swagger.put('/users/{id}?fields:s^x-request-id??{name:s}#Users')
+  .res(200, '{id:i, name:s}');
+
+// Query and tag only
 swagger.get('/users?limit:i:10,offset:i:0#Users')
   .summary('List users')
   .res(200, '[{id:i, name:s}]');
 
-// Works with path parameters too
-swagger.get('/users/{id}?fields:s#Users')
-  .res(200, '{id:i, name:s, email:?s}');
-
-// Shorthand with POST, PUT, DELETE
-swagger.post('/users?notify:b:true#Users')
-  .req('{name:s, email:s}')
-  .res(201, '{id:i, name:s, email:s}');
-
-swagger.del('/users/{id}#Users')
-  .res(204);
+// Header and tag only
+swagger.get('/secure^authorization#Auth')
+  .res(200, '{data:s}');
 ```
 
-**Note**: Explicit method calls (`.query()`, `.tag()`) take precedence over path shorthand if both are used.
+**Note**: 
+- Tag (`#`) must always be last in the shorthand string
+- Explicit method calls (`.query()`, `.header()`, `.req()`, `.tag()`) take precedence over path shorthand if both are used
 
 ### Fluent API Methods
 
